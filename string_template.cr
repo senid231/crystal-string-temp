@@ -18,7 +18,7 @@ class StringTemplate
   end
   
   class SeparatorInvalid < StringTemplateException
-    def initialize(sep : String?)
+    def initialize(sep : Char?)
       super("Separator Invalid: #{sep}")
     end
   end
@@ -29,11 +29,11 @@ class StringTemplate
     end
   end
     
-  
+  KEY_MATCHER = /[a-z0-9_]/i
   ROUND_BRACES = 1
   SQUARE_BRACES = 2
   FIGURE_BRACES = 3
-  ALLOWED_SEPARATORS = ["$", "%", "@", "#", "&", "~", "?"]
+  ALLOWED_SEPARATORS = ['$', '%', '@', '#', '&', '~', '?']
   BRACES = {
     ROUND_BRACES => ['(', ')'], 
     SQUARE_BRACES => ['[', ']'], 
@@ -47,12 +47,12 @@ class StringTemplate
 
   
   # todo: add posibility to use templates without braces
-  def initialize(@string : String, params={} of Symbol => String)
-    self.separator = params.fetch(:separator, DEFAULT_SEPARATOR)
-    self.braces = params.fetch(:braces, DEFAULT_BRACES)
+  def initialize(@string : String, separator=DEFAULT_SEPARATOR : Char, braces=DEFAULT_BRACES : Int32)
+    self.separator = separator
+    self.braces = braces
   end
 
-  def separator=(sep : String) : String
+  def separator=(sep : Char) : Char
     raise SeparatorInvalid.new(sep) unless ALLOWED_SEPARATORS.includes?(sep)
     @separator = sep
   end
@@ -81,7 +81,7 @@ class StringTemplate
 
   private def validate(keys : Array(String|Symbol)) : Nil
     keys.each do |key|
-      raise KeyInvalid.new(key.to_s) unless key.to_s.match(/[A-Fa-f0-9_]/)
+      raise KeyInvalid.new(key.to_s) unless key.to_s.match(KEY_MATCHER)
     end
     nil
   end
